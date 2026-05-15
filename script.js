@@ -12,6 +12,8 @@ const LOCAL_POSTER_URLS = {
   D: "./产品海报/西湖醋鱼-价格_01.png",
 };
 
+const QR_CODE_URL = "./assets/qr-code.png";
+
 const questions = [
   {
     title: "你今天出门前的精神状态更像？",
@@ -350,6 +352,7 @@ async function fetchPosterBlob(url) {
 
 async function buildSharePoster(key) {
   const productImage = await loadImage(LOCAL_POSTER_URLS[key]);
+  const qrImage = await loadImage(QR_CODE_URL).catch(() => null);
   const result = results[key];
   const sourceWidth = productImage.naturalWidth || productImage.width;
   const sourceHeight = productImage.naturalHeight || productImage.height;
@@ -365,7 +368,7 @@ async function buildSharePoster(key) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(productImage, 0, 0, outputWidth, outputHeight);
 
-  drawQrPlaceholder(ctx, canvas.width, outputHeight, qrBandHeight, result);
+  drawQrBlock(ctx, canvas.width, outputHeight, qrBandHeight, result, qrImage);
   return canvas.toDataURL("image/png");
 }
 
@@ -378,7 +381,7 @@ function loadImage(src) {
   });
 }
 
-function drawQrPlaceholder(ctx, width, top, height, result) {
+function drawQrBlock(ctx, width, top, height, result, qrImage) {
   const padding = Math.round(width * 0.07);
   const qrSize = Math.round(height * 0.68);
   const qrX = padding;
@@ -398,6 +401,28 @@ function drawQrPlaceholder(ctx, width, top, height, result) {
   ctx.strokeStyle = "#162018";
   ctx.stroke();
 
+  if (qrImage) {
+    const qrInset = Math.round(qrSize * 0.08);
+    ctx.drawImage(
+      qrImage,
+      qrX + qrInset,
+      qrY + qrInset,
+      qrSize - qrInset * 2,
+      qrSize - qrInset * 2,
+    );
+  } else {
+    drawQrFallback(ctx, qrX, qrY, qrSize);
+  }
+
+  ctx.fillStyle = "#162018";
+  ctx.font = `900 ${Math.round(width * 0.07)}px Arial, sans-serif`;
+  ctx.textBaseline = "middle";
+  ctx.fillText("扫码测你的咖啡人格", textX, centerY - Math.round(height * 0.14));
+  ctx.font = `800 ${Math.round(width * 0.046)}px Arial, sans-serif`;
+  ctx.fillText(`我测出来是：${result.title}`, textX, centerY + Math.round(height * 0.08));
+}
+
+function drawQrFallback(ctx, qrX, qrY, qrSize) {
   ctx.fillStyle = "#162018";
   const cell = qrSize / 7;
   for (let row = 0; row < 7; row += 1) {
@@ -410,13 +435,6 @@ function drawQrPlaceholder(ctx, width, top, height, result) {
       }
     }
   }
-
-  ctx.fillStyle = "#162018";
-  ctx.font = `900 ${Math.round(width * 0.07)}px Arial, sans-serif`;
-  ctx.textBaseline = "middle";
-  ctx.fillText("扫码测你的咖啡人格", textX, centerY - Math.round(height * 0.14));
-  ctx.font = `800 ${Math.round(width * 0.046)}px Arial, sans-serif`;
-  ctx.fillText(`我测出来是：${result.title}`, textX, centerY + Math.round(height * 0.08));
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
