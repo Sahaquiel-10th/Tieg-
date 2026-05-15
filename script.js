@@ -13,6 +13,8 @@ const LOCAL_POSTER_URLS = {
 };
 
 const QR_CODE_URL = "./assets/qr-code.png";
+const ANALYTICS_ENDPOINT = "";
+const ANALYTICS_SESSION_KEY = "irondog_analytics_session";
 
 const questions = [
   {
@@ -225,6 +227,11 @@ function selectAnswer(answer) {
   state.resultKey = calculateResult(state.answers);
   renderResult();
   switchScreen("result");
+  trackEvent("finish_test", {
+    result: state.resultKey,
+    result_title: results[state.resultKey].title,
+    answers: state.answers.join(""),
+  });
 }
 
 function calculateResult(answers) {
@@ -289,6 +296,7 @@ function startQuiz() {
   state.answers = [];
   renderQuestion();
   switchScreen("quiz");
+  trackEvent("start_test");
 }
 
 function goToPreviousQuestion() {
@@ -303,6 +311,10 @@ function goToPreviousQuestion() {
 function openPosterModal() {
   posterModal.classList.remove("is-hidden");
   document.body.style.overflow = "hidden";
+  trackEvent("open_poster", {
+    result: state.resultKey,
+    result_title: results[state.resultKey].title,
+  });
 }
 
 function closePosterModal() {
@@ -314,6 +326,10 @@ async function sharePoster() {
   const result = results[state.resultKey];
   const posterUrl = resultPosterPreview.src || getPosterUrl(state.resultKey);
   const fileName = `${result.title}.png`;
+  trackEvent("save_poster", {
+    result: state.resultKey,
+    result_title: result.title,
+  });
 
   try {
     const blob = await fetchPosterBlob(posterUrl);
@@ -462,6 +478,49 @@ function downloadBlob(blob, fileName) {
   URL.revokeObjectURL(objectUrl);
 }
 
+function trackEvent(eventName, data = {}) {
+  if (!ANALYTICS_ENDPOINT) {
+    return;
+  }
+
+  const payload = {
+    event: eventName,
+    data,
+    session_id: getAnalyticsSessionId(),
+    page: location.pathname,
+    referrer: document.referrer || "",
+    screen: `${window.innerWidth}x${window.innerHeight}`,
+    ts: new Date().toISOString(),
+  };
+  const body = JSON.stringify(payload);
+
+  if (navigator.sendBeacon) {
+    const blob = new Blob([body], { type: "text/plain;charset=UTF-8" });
+    navigator.sendBeacon(ANALYTICS_ENDPOINT, blob);
+    return;
+  }
+
+  fetch(ANALYTICS_ENDPOINT, {
+    method: "POST",
+    body,
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    keepalive: true,
+  }).catch(() => {});
+}
+
+function getAnalyticsSessionId() {
+  try {
+    let sessionId = localStorage.getItem(ANALYTICS_SESSION_KEY);
+    if (!sessionId) {
+      sessionId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(ANALYTICS_SESSION_KEY, sessionId);
+    }
+    return sessionId;
+  } catch (error) {
+    return "unknown";
+  }
+}
+
 startBtn.addEventListener("click", startQuiz);
 backBtn.addEventListener("click", () => switchScreen("intro"));
 restartBtn.addEventListener("click", startQuiz);
@@ -476,3 +535,4 @@ document.addEventListener("keydown", (event) => {
     closePosterModal();
   }
 });
+trackEvent("page_view");
