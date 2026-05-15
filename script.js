@@ -13,7 +13,7 @@ const LOCAL_POSTER_URLS = {
 };
 
 const QR_CODE_URL = "./assets/qr-code.png";
-const ANALYTICS_ENDPOINT = "";
+const ANALYTICS_ENDPOINT = "https://1383535556-4vn64bam9o.ap-shanghai.tencentscf.com";
 const ANALYTICS_SESSION_KEY = "irondog_analytics_session";
 
 const questions = [

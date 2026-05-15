@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export PORT=9000
+
+if [ -x /var/lang/node20/bin/node ]; then
+  /var/lang/node20/bin/node server.js
+else
+  node server.js
+fi
