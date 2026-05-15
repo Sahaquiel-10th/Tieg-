@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测测你的咖啡人格</title>
+    <meta
+      name="description"
+      content="回答 8 道题，测出你的今日咖啡人格，看看你适合哪杯铁狗特调。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" id="introScreen">
+        <div class="brand-row">
+          <span>童年回血型人格</span>
+          <span>怪味冒险型人格</span>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">铁狗咖啡活动 MVP</p>
+            <h1>测测你的咖啡人格</h1>
+            <button class="primary-btn" id="startBtn" type="button">
+              开始测试我的咖啡人格
+            </button>
+          </div>
+
+          <div class="poster-stack" aria-label="产品海报预览">
+            <div class="poster-card poster-a">
+              <img
+                src="https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E6%9F%A0%E6%AA%AC%E5%A5%B6-%E4%BB%B7%E6%A0%BC_01.png"
+                alt="模糊产品海报预览"
+              />
+            </div>
+            <div class="poster-card poster-b">
+              <img
+                src="https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E5%85%AD%E6%9C%88%E9%9C%9C-%E4%BB%B7%E6%A0%BC_01.png"
+                alt="模糊产品海报预览"
+              />
+            </div>
+            <div class="poster-card poster-c">
+              <img
+                src="https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E8%A5%BF%E6%B9%96%E9%86%8B%E9%B1%BC-%E4%BB%B7%E6%A0%BC_01.png"
+                alt="模糊产品海报预览"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="quiz is-hidden" id="quizScreen" aria-live="polite">
+        <div class="quiz-top">
+          <button class="ghost-btn" id="backBtn" type="button">返回首页</button>
+          <div class="progress-wrap" aria-label="答题进度">
+            <span id="progressText">1 / 8</span>
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <article class="question-panel">
+          <p class="question-index" id="questionIndex">QUESTION 01</p>
+          <h2 id="questionTitle"></h2>
+          <div class="option-list" id="optionList"></div>
+          <div class="quiz-actions">
+            <button class="ghost-btn" id="prevQuestionBtn" type="button">上一题</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="result is-hidden" id="resultScreen">
+        <div class="result-layout">
+          <div class="result-copy">
+            <p class="eyebrow" id="resultType"></p>
+            <h2 id="resultTitle"></h2>
+            <p class="result-intro" id="resultIntro"></p>
+
+            <div class="result-block">
+              <span>你适合这杯</span>
+              <strong id="resultProduct"></strong>
+              <p id="resultDrink"></p>
+            </div>
+
+            <div class="keyword-row" id="keywordRow"></div>
+
+            <div class="result-block">
+              <span>推荐理由</span>
+              <p id="resultReason"></p>
+            </div>
+
+            <div class="action-row">
+              <button class="primary-btn" id="showPosterBtn" type="button">
+                查看我的产品海报
+              </button>
+              <button class="primary-btn share-btn" id="sharePosterBtn" type="button">
+                保存 / 分享海报
+              </button>
+              <button class="ghost-btn" id="restartBtn" type="button">
+                重新测试
+              </button>
+            </div>
+          </div>
+
+          <button class="result-poster" id="posterPreviewBtn" type="button">
+            <img id="resultPosterPreview" src="" alt="" />
+            <span>点击放大海报</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal is-hidden" id="posterModal" role="dialog" aria-modal="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-panel">
+        <button class="close-btn" id="closeModalBtn" type="button" aria-label="关闭海报">
+          ×
+        </button>
+        <img id="modalPoster" src="" alt="" />
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
