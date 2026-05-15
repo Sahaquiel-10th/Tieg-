@@ -98,6 +98,7 @@ const results = {
     keywords: ["童年感", "回血", "软乎乎", "想被照顾"],
     reason: "你今天不需要被咖啡教育，你需要被柠檬奶温柔接住。",
     posterAlt: "湖州柠檬奶产品海报",
+    posterBg: "#dcff57",
   },
   B: {
     type: "B 型：柠檬奶雪泥",
@@ -109,6 +110,7 @@ const results = {
     keywords: ["怕热", "需要降温", "清爽", "续命冰块"],
     reason: "你今天不是缺咖啡，你是缺一场舌尖小型暴风雪。",
     posterAlt: "柠檬奶雪泥产品海报",
+    posterBg: "#dff3ff",
   },
   C: {
     type: "C 型：莫干山六月霜美式",
@@ -121,6 +123,7 @@ const results = {
     keywords: ["清醒", "植物系", "薄荷感", "脑子要开机"],
     reason: "你不是困，你是需要被一片植物轻轻拍醒。",
     posterAlt: "莫干山六月霜冰美式产品海报",
+    posterBg: "#ffe343",
   },
   D: {
     type: "D 型：西湖醋鱼咖啡",
@@ -132,6 +135,7 @@ const results = {
     keywords: ["猎奇", "社交货币", "杭州特调", "命硬但会玩"],
     reason: "你喝的不是咖啡，是一条在杯子里翻身的杭州梗。",
     posterAlt: "西湖醋鱼咖啡产品海报",
+    posterBg: "#ffdbe5",
   },
 };
 
@@ -252,19 +256,17 @@ function getPosterUrl(key) {
 }
 
 function applyPosterImage(image, key) {
-  image.src = getPosterUrl(key);
   image.alt = results[key].posterAlt;
-  image.onerror = () => {
-    image.onerror = null;
-    image.src = LOCAL_POSTER_URLS[key];
-  };
+  buildSharePoster(key).then((posterUrl) => {
+    image.src = posterUrl;
+  });
 }
 
 function renderResult() {
   const result = results[state.resultKey];
   resultType.textContent = result.type;
   resultTitle.textContent = result.title;
-  resultIntro.textContent = result.intro;
+  resultIntro.textContent = "长按海报保存，发朋友圈。二维码位置已预留，后续替换即可。";
   resultProduct.textContent = result.product;
   resultDrink.textContent = result.drink;
   resultReason.textContent = result.reason;
@@ -308,12 +310,11 @@ function closePosterModal() {
 
 async function sharePoster() {
   const result = results[state.resultKey];
-  const posterUrl = getPosterUrl(state.resultKey);
-  const localPosterUrl = LOCAL_POSTER_URLS[state.resultKey];
+  const posterUrl = resultPosterPreview.src || getPosterUrl(state.resultKey);
   const fileName = `${result.title}.png`;
 
   try {
-    const blob = await fetchPosterBlob(localPosterUrl);
+    const blob = await fetchPosterBlob(posterUrl);
     const file = new File([blob], fileName, { type: blob.type || "image/png" });
 
     if (navigator.canShare?.({ files: [file] })) {
@@ -345,6 +346,91 @@ async function fetchPosterBlob(url) {
   }
 
   return response.blob();
+}
+
+async function buildSharePoster(key) {
+  const productImage = await loadImage(LOCAL_POSTER_URLS[key]);
+  const result = results[key];
+  const sourceWidth = productImage.naturalWidth || productImage.width;
+  const sourceHeight = productImage.naturalHeight || productImage.height;
+  const outputWidth = 1400;
+  const outputHeight = Math.round((sourceHeight / sourceWidth) * outputWidth);
+  const qrBandHeight = Math.round(outputWidth * 0.36);
+  const canvas = document.createElement("canvas");
+  canvas.width = outputWidth;
+  canvas.height = outputHeight + qrBandHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = result.posterBg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(productImage, 0, 0, outputWidth, outputHeight);
+
+  drawQrPlaceholder(ctx, canvas.width, outputHeight, qrBandHeight, result);
+  return canvas.toDataURL("image/png");
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function drawQrPlaceholder(ctx, width, top, height, result) {
+  const padding = Math.round(width * 0.07);
+  const qrSize = Math.round(height * 0.68);
+  const qrX = padding;
+  const qrY = top + Math.round((height - qrSize) / 2);
+  const textX = qrX + qrSize + Math.round(width * 0.055);
+  const centerY = top + Math.round(height / 2);
+
+  ctx.fillStyle = "#fff8d7";
+  ctx.fillRect(0, top, width, height);
+  ctx.fillStyle = "#162018";
+  ctx.fillRect(0, top, width, Math.max(10, Math.round(width * 0.012)));
+
+  ctx.fillStyle = "#ffffff";
+  roundRect(ctx, qrX, qrY, qrSize, qrSize, Math.round(qrSize * 0.08));
+  ctx.fill();
+  ctx.lineWidth = Math.max(8, Math.round(width * 0.01));
+  ctx.strokeStyle = "#162018";
+  ctx.stroke();
+
+  ctx.fillStyle = "#162018";
+  const cell = qrSize / 7;
+  for (let row = 0; row < 7; row += 1) {
+    for (let col = 0; col < 7; col += 1) {
+      const edge = row === 0 || row === 6 || col === 0 || col === 6;
+      const center = row >= 2 && row <= 4 && col >= 2 && col <= 4;
+      const noise = (row * 3 + col * 5) % 4 === 0;
+      if (edge || center || noise) {
+        ctx.fillRect(qrX + col * cell, qrY + row * cell, cell * 0.86, cell * 0.86);
+      }
+    }
+  }
+
+  ctx.fillStyle = "#162018";
+  ctx.font = `900 ${Math.round(width * 0.07)}px Arial, sans-serif`;
+  ctx.textBaseline = "middle";
+  ctx.fillText("扫码测你的咖啡人格", textX, centerY - Math.round(height * 0.14));
+  ctx.font = `800 ${Math.round(width * 0.046)}px Arial, sans-serif`;
+  ctx.fillText(`我测出来是：${result.title}`, textX, centerY + Math.round(height * 0.08));
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
 }
 
 function downloadBlob(blob, fileName) {

@@ -2,7 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <title>测测你的咖啡人格</title>
     <meta
       name="description"
@@ -93,10 +96,10 @@
 
             <div class="action-row">
               <button class="primary-btn" id="showPosterBtn" type="button">
-                查看我的产品海报
+                放大海报
               </button>
               <button class="primary-btn share-btn" id="sharePosterBtn" type="button">
-                保存 / 分享海报
+                保存海报
               </button>
               <button class="ghost-btn" id="restartBtn" type="button">
                 重新测试
@@ -104,10 +107,10 @@
             </div>
           </div>
 
-          <button class="result-poster" id="posterPreviewBtn" type="button">
+          <div class="result-poster" id="posterPreviewBtn" role="button" tabindex="0">
             <img id="resultPosterPreview" src="" alt="" />
-            <span>点击放大海报</span>
-          </button>
+            <span>长按保存，发朋友圈</span>
+          </div>
         </div>
       </section>
     </main>
