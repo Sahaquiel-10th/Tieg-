@@ -1,15 +1,15 @@
 const PLACEHOLDER_POSTER_URLS = {
-  A: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E6%9F%A0%E6%AA%AC%E5%A5%B6-%E4%BB%B7%E6%A0%BC_01.png",
-  B: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E6%9F%A0%E6%AA%AC%E5%A5%B6%E9%9B%AA%E6%B3%A5-%E4%BB%B7%E6%A0%BC_01.png",
-  C: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E5%85%AD%E6%9C%88%E9%9C%9C-%E4%BB%B7%E6%A0%BC_01.png",
-  D: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E8%A5%BF%E6%B9%96%E9%86%8B%E9%B1%BC-%E4%BB%B7%E6%A0%BC_01.png",
+  A: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E6%B9%96%E5%B7%9E%E6%9F%A0%E6%AA%AC%E5%A5%B6.png",
+  B: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E6%9F%A0%E6%AA%AC%E5%A5%B6%E9%9B%AA%E6%B3%A5.png",
+  C: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E5%85%AD%E6%9C%88%E9%9C%9C.jpg",
+  D: "https://media-1383535556.cos.ap-shanghai.myqcloud.com/%E8%A5%BF%E6%B9%96%E9%86%8B%E9%B1%BC%E5%92%96%E5%95%A1.png",
 };
 
 const LOCAL_POSTER_URLS = {
-  A: "./产品海报/柠檬奶-价格_01.png",
-  B: "./产品海报/柠檬奶雪泥-价格_01.png",
-  C: "./产品海报/六月霜-价格_01.png",
-  D: "./产品海报/西湖醋鱼-价格_01.png",
+  A: "./assets/posters/huzhou-lemon-milk.png",
+  B: "./assets/posters/lemon-milk-slush.png",
+  C: "./assets/posters/june-frost.jpg",
+  D: "./assets/posters/west-lake-fish-coffee.png",
 };
 
 const QR_CODE_URL = "./assets/qr-code.png";
@@ -386,6 +386,7 @@ async function buildSharePoster(key) {
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = src;

@@ -409,29 +409,17 @@ button {
   background: var(--white);
   cursor: pointer;
   box-shadow: 12px 12px 0 var(--ink);
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.18s ease;
 }
 
 .result-poster img {
   display: block;
   width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
+  max-height: min(76vh, 760px);
+  object-fit: contain;
   -webkit-user-select: auto;
   user-select: auto;
-}
-
-.result-poster span {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  border: 3px solid var(--ink);
-  border-radius: 999px;
-  background: var(--yellow);
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: 950;
 }
 
 .modal {
@@ -822,8 +810,10 @@ button {
     max-width: 420px;
     min-height: 0;
     margin: 0 auto;
+    padding-bottom: 0;
     border-width: 3px;
     box-shadow: 6px 6px 0 var(--ink);
+    overflow: hidden;
     cursor: default;
   }
 
@@ -833,14 +823,6 @@ button {
     aspect-ratio: auto;
     object-fit: contain;
     background: var(--white);
-  }
-
-  .result-poster span {
-    right: 8px;
-    bottom: 8px;
-    border-width: 2px;
-    padding: 6px 9px;
-    font-size: 12px;
   }
 
   .modal {
