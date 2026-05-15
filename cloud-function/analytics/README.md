@@ -5,9 +5,7 @@
 ## 记录的事件
 
 - `page_view`: 打开页面
-- `start_test`: 点击开始测试
 - `finish_test`: 完成测试，包含 `result` 和 `result_title`
-- `open_poster`: 放大海报
 - `save_poster`: 点击保存海报
 
 ## 腾讯云函数设置

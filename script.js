@@ -296,7 +296,6 @@ function startQuiz() {
   state.answers = [];
   renderQuestion();
   switchScreen("quiz");
-  trackEvent("start_test");
 }
 
 function goToPreviousQuestion() {
@@ -311,10 +310,6 @@ function goToPreviousQuestion() {
 function openPosterModal() {
   posterModal.classList.remove("is-hidden");
   document.body.style.overflow = "hidden";
-  trackEvent("open_poster", {
-    result: state.resultKey,
-    result_title: results[state.resultKey].title,
-  });
 }
 
 function closePosterModal() {
